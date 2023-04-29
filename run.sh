@@ -1,0 +1,1 @@
+python3.9 src/nostr/nostr_helper.py
