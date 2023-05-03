@@ -1,40 +1,20 @@
-# Verwende das offizielle Node.js-Image als Basis
-FROM node:14
+# Verwenden Sie ein offizielles Python-Image als Basis
+FROM python:3.9-slim
 
-# Erstelle das Arbeitsverzeichnis
+# Setzen Sie das Arbeitsverzeichnis auf /app
 WORKDIR /app
 
-# Kopiere package.json und package-lock.json in das Arbeitsverzeichnis
-COPY package*.json ./
+# Kopieren Sie die Anforderungsdatei in das Arbeitsverzeichnis
+COPY requirements.txt .
 
-# Installiere die Node.js-Abhängigkeiten
-RUN npm ci
+# Installieren Sie alle benötigten Pakete
+RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
-# Installiere Python 3.9 und pip
-RUN curl -O https://www.python.org/ftp/python/3.9.9/Python-3.9.9.tar.xz && \
-    tar -xf Python-3.9.9.tar.xz && \
-    cd Python-3.9.9 && \
-    ./configure && \
-    make -j $(nproc) && \
-    make altinstall && \
-    cd .. && \
-    rm -rf Python-3.9.9 Python-3.9.9.tar.xz
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/local/bin/python3.9 1
-RUN python3.9 -m pip install --upgrade pip
-
-# Kopiere die requirements.txt-Datei und den python_nostr-Ordner in das Arbeitsverzeichnis
-COPY requirements.txt ./
-
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y && \
-    export PATH="$HOME/.cargo/bin:$PATH" && \
-    rustup install stable && \
-    rustup default stable
-
-# Installiere die Python-Abhängigkeiten
-RUN python3.9 -m pip install -r requirements.txt
-
-# Kopiere den Rest der Anwendung in das Arbeitsverzeichnis
+# Kopieren Sie den Rest des Anwendungscodes in das Arbeitsverzeichnis
 COPY . .
 
-# Führe das Build-Skript aus
-RUN npm run build
+# Öffnen Sie den Port, auf dem die App laufen wird
+EXPOSE 8000
+
+# Führen Sie das Python-Script aus
+CMD ["python", "src/nostr/nostr_backend.py"]
