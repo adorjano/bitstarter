@@ -11,7 +11,7 @@ COPY requirements.txt .
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
 # Kopieren Sie den Rest des Anwendungscodes in das Arbeitsverzeichnis
-COPY . .
+# COPY . .
 
 # Öffnen Sie den Port, auf dem die App laufen wird
 EXPOSE 8000
